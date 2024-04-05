@@ -1,0 +1,19 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "description": "An online multiplayer tic-tac-toe game",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moonejon/tic-tac-toe.git"
+  },
+  "author": "Jonathan Mooney",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moonejon/tic-tac-toe/issues"
+  },
+  "homepage": "https://github.com/moonejon/tic-tac-toe#readme"
+}
