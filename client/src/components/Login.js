@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Login = () => {
+  const [username, setUsername] = useState(null);
+  const [password, setPassword] = useState(null);
   const login = () => {};
   return (
     <div className="login">
@@ -9,17 +11,17 @@ const Login = () => {
         type="text"
         placeholder="Username"
         onChange={(event) => {
-          setUser({ ...user, username: event.target.value });
+          setUsername(event.target.value);
         }}
       />
       <input
         type="password"
         placeholder="Password"
         onChange={(event) => {
-          setUser({ ...user, password: event.target.value });
+          setPassword(event.target.value);
         }}
       />
-      <button onSubmit={login}>Login</button>
+      <button onClick={login}>Login</button>
     </div>
   );
 };
