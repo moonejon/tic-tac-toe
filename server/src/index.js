@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
-import StreamChat from "stream-chat";
+import { StreamChat } from "stream-chat";
 import dotenv from "dotenv";
 
 dotenv.config();
