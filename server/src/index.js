@@ -14,13 +14,14 @@ app.use(express.json());
 const api_key = process.env.API_KEY; // Access the API_KEY variable from .env file
 const api_secret = process.env.API_SECRET; // Access the API_SECRET variable from .env file
 
+console.log(api_key, api_secret);
 const serverClient = StreamChat.getInstance(api_key, api_secret);
 
-app.post("/signup", (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const { firstName, lastName, username, password } = req.body;
     const userId = uuidv4();
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = await bcrypt.hashSync(password, 10);
 
     const token = serverClient.createToken(userId);
 
@@ -29,7 +30,30 @@ app.post("/signup", (req, res) => {
     res.json(error);
   }
 });
-app.post("/login");
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    
+    const { users } = await serverClient.queryUsers({ name: username });
+
+    if (users.length === 0) {
+      return res.json({ message: "User not found" });
+    }
+
+    const passwordMatch = await bcrypt.compareSync(password, users[0].hashedPassword);
+
+    const token = serverClient.createToken(users[0].id);
+
+    if(passwordMatch) {
+      res.json({ token, userId: users[0].id, firstName: users[0].firstName, lastName: users[0].lastName, username, hashedPassword: users[0].hashedPassword });
+    } else {
+      return res.json({ message: "Invalid credentials" });
+    }
+
+  } catch (error) {
+    res.json(error);
+  }
+});
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001");

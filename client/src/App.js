@@ -10,6 +10,8 @@ function App() {
   const token = cookies.get("token");
   const client = StreamChat.getInstance(process.env.REACT_APP_API_KEY);
 
+  const [isAuth, setIsAuth] = useState(false);
+
   if (token) {
     client
       .connectUser(
@@ -22,16 +24,16 @@ function App() {
         },
         token
       )
-      .then((user) => {
-        console.log(user);
+      .then(() => {
+        setIsAuth(true);
       });
   }
   return (
     <div className="App">
       <h1>Authentication</h1>
       <div className="auth">
-        <SignUp />
-        <Login />
+        <SignUp setIsAuth={setIsAuth}/>
+        <Login setIsAuth={setIsAuth}/>
       </div>
     </div>
   );
