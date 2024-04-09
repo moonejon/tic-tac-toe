@@ -8,7 +8,7 @@ const Login = ({ setIsAuth }) => {
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
   const login = () => {
-    Axios.post("http://localhost:3001/login", {
+    Axios.post("https://tic-tac-toe-4v02.onrender.com/login", {
       username: username,
       password: password,
     }).then((response) => {
