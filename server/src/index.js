@@ -14,7 +14,6 @@ app.use(express.json());
 const api_key = process.env.API_KEY; // Access the API_KEY variable from .env file
 const api_secret = process.env.API_SECRET; // Access the API_SECRET variable from .env file
 
-console.log(api_key, api_secret);
 const serverClient = StreamChat.getInstance(api_key, api_secret);
 
 app.post("/signup", async (req, res) => {
