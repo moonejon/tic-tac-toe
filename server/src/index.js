@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import { StreamChat } from "stream-chat";
 import dotenv from "dotenv";
 
+import { playersPool } from "./DBConfig.js";
+
 dotenv.config();
 const app = express();
 
@@ -17,38 +19,55 @@ const api_secret = process.env.API_SECRET; // Access the API_SECRET variable fro
 const serverClient = StreamChat.getInstance(api_key, api_secret);
 
 app.post("/signup", async (req, res) => {
+  const { firstName, lastName, username, password } = req.body;
+
   try {
-    const { firstName, lastName, username, password } = req.body;
     const userId = uuidv4();
     const hashedPassword = await bcrypt.hashSync(password, 10);
 
     const token = serverClient.createToken(userId);
 
+    await playersPool.query(
+      `INSERT INTO players ( username ) VALUES ('${username}') RETURNING *`
+    );
+
     res.json({ token, userId, firstName, lastName, username, hashedPassword });
   } catch (error) {
     res.json(error);
   }
+
+  console.log(token);
 });
+
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const { users } = await serverClient.queryUsers({ name: username });
 
     if (users.length === 0) {
       return res.json({ message: "User not found" });
     }
 
-    const passwordMatch = await bcrypt.compareSync(password, users[0].hashedPassword);
+    const passwordMatch = await bcrypt.compareSync(
+      password,
+      users[0].hashedPassword
+    );
 
     const token = serverClient.createToken(users[0].id);
 
-    if(passwordMatch) {
-      res.json({ token, userId: users[0].id, firstName: users[0].firstName, lastName: users[0].lastName, username, hashedPassword: users[0].hashedPassword });
+    if (passwordMatch) {
+      res.json({
+        token,
+        userId: users[0].id,
+        firstName: users[0].firstName,
+        lastName: users[0].lastName,
+        username,
+        hashedPassword: users[0].hashedPassword,
+      });
     } else {
       return res.json({ message: "Invalid credentials" });
     }
-
   } catch (error) {
     res.json(error);
   }
