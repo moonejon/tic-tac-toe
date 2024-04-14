@@ -35,8 +35,6 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     res.json(error);
   }
-
-  console.log(token);
 });
 
 app.post("/login", async (req, res) => {
@@ -68,6 +66,30 @@ app.post("/login", async (req, res) => {
     } else {
       return res.json({ message: "Invalid credentials" });
     }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+app.post("/update", async (req, res) => {
+  const {  username, result } = req.body;
+
+  try {
+    if(result === "won"){
+      await playersPool.query(
+        `UPDATE players SET wins = wins + 1 WHERE username = '${username}'`
+      );
+    } else if(result === "lost"){
+      await playersPool.query(
+        `UPDATE players SET losses = losses + 1 WHERE username = '${username}'`
+      );
+    } else {
+      await playersPool.query(
+        `UPDATE players SET ties = ties + 1 WHERE username = '${username}'`
+      );
+    }
+
+    res.json({ message: "Stats updated" });
   } catch (error) {
     res.json(error);
   }
