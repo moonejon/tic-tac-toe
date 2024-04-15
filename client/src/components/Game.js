@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Board from "./Board";
 
-const Game = ({ channel }) => {
+const Game = ({ channel, setIsAuth }) => {
   const [playersJoined, setPlayersJoined] = useState(
     channel.state.watcher_count === 2
   );
@@ -18,7 +18,7 @@ const Game = ({ channel }) => {
         <h1>Waiting for opponent to join...</h1>
       ) : (
         <div id="gameContainer">
-          <Board result={result} setResult={setResult} />
+          <Board result={result} setResult={setResult} setIsAuth={setIsAuth} />
         </div>
       )}
     </div>

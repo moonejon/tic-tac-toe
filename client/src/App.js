@@ -59,7 +59,7 @@ function App() {
       <div className="title text-pop-up-top">Tic Tac Toe</div>
       {isAuth ? (
         <Chat client={client}>
-          <JoinGame />
+          <JoinGame setIsAuth={setIsAuth} />
           <div className="loggedInUser" onClick={handleOpenModal}>
             {cookies.get("username")}
           </div>

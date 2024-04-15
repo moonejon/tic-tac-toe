@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useChatContext, Channel } from "stream-chat-react";
 import Game from "./Game";
 
-const JoinGame = () => {
+const JoinGame = ({ setIsAuth }) => {
   const [opponent, setOpponent] = useState("");
   const [channel, setChannel] = useState(null);
   const { client } = useChatContext();
@@ -27,7 +27,7 @@ const JoinGame = () => {
     <>
       {channel ? (
         <Channel channel={channel}>
-          <Game channel={channel} />
+          <Game channel={channel} setIsAuth={setIsAuth} />
         </Channel>
       ) : (
         <div className="joinGame">
