@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Cookies from "universal-cookie";
 import { StreamChat } from "stream-chat";
 import { Chat } from "stream-chat-react";
+import { Modal, Button, Box } from "@mui/material";
 import Game from "./components/Game";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
@@ -14,6 +15,15 @@ function App() {
   const client = StreamChat.getInstance(process.env.REACT_APP_API_KEY);
 
   const [isAuth, setIsAuth] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   const logOut = () => {
     cookies.remove("token");
@@ -24,6 +34,7 @@ function App() {
     cookies.remove("hashedPassword");
     client.disconnectUser();
     setIsAuth(false);
+    setOpenModal(false);
   };
 
   if (token) {
@@ -42,18 +53,29 @@ function App() {
         setIsAuth(true);
       });
   }
+
   return (
     <div className="App">
+      <div className="title text-pop-up-top">Tic Tac Toe</div>
       {isAuth ? (
         <Chat client={client}>
           <JoinGame />
-          <button onClick={logOut}>Log Out</button>
+          <div className="loggedInUser" onClick={handleOpenModal}>
+            {cookies.get("username")}
+          </div>
+          <Modal open={openModal} onClose={handleCloseModal}>
+            <Box className="modalContent">
+              <div>Are you sure you want to log out?</div>
+              <Button onClick={logOut}>Log Out</Button>
+            </Box>
+          </Modal>
         </Chat>
       ) : (
         <div className="auth">
-          {isAuth && <h2>Authenticated</h2>}
-          <SignUp setIsAuth={setIsAuth} />
-          <Login setIsAuth={setIsAuth} />
+          <div className="authForms">
+            <SignUp setIsAuth={setIsAuth} />
+            <Login setIsAuth={setIsAuth} />
+          </div>
         </div>
       )}
     </div>

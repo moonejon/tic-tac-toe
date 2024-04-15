@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useChatContext, Channel } from "stream-chat-react";
 import Game from "./Game";
+
 const JoinGame = () => {
   const [opponent, setOpponent] = useState("");
   const [channel, setChannel] = useState(null);
-
   const { client } = useChatContext();
 
   const createChannel = async () => {
@@ -22,6 +22,7 @@ const JoinGame = () => {
     await newChannel.watch();
     setChannel(newChannel);
   };
+
   return (
     <>
       {channel ? (
@@ -29,13 +30,15 @@ const JoinGame = () => {
           <Game channel={channel} />
         </Channel>
       ) : (
-        <div id="joinGame">
-          <h4> Create Game </h4>
+        <div className="joinGame">
           <input
+            className="joinGameInput"
             placeholder="Opponent username..."
             onChange={(event) => setOpponent(event.target.value)}
           />
-          <button onClick={createChannel}>Join Game</button>
+          <button className="joinGameButton" onClick={createChannel}>
+            Join Game
+          </button>
         </div>
       )}
     </>

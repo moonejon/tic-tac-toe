@@ -20,7 +20,6 @@ const serverClient = StreamChat.getInstance(api_key, api_secret);
 
 app.post("/signup", async (req, res) => {
   const { firstName, lastName, username, password } = req.body;
-
   try {
     const userId = uuidv4();
     const hashedPassword = await bcrypt.hashSync(password, 10);
@@ -72,14 +71,14 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/update", async (req, res) => {
-  const {  username, result } = req.body;
+  const { username, result } = req.body;
 
   try {
-    if(result === "won"){
+    if (result === "won") {
       await playersPool.query(
         `UPDATE players SET wins = wins + 1 WHERE username = '${username}'`
       );
-    } else if(result === "lost"){
+    } else if (result === "lost") {
       await playersPool.query(
         `UPDATE players SET losses = losses + 1 WHERE username = '${username}'`
       );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Axios from "axios";
 import Cookies from "universal-cookie";
+import { Button } from "@mui/material";
 
 const SignUp = ({ setIsAuth }) => {
   const cookies = new Cookies();
@@ -23,7 +24,6 @@ const SignUp = ({ setIsAuth }) => {
   };
   return (
     <div className="signUp">
-      <label> Sign Up</label>
       <input
         type="text"
         placeholder="First Name"
@@ -52,7 +52,18 @@ const SignUp = ({ setIsAuth }) => {
           setUser({ ...user, password: event.target.value });
         }}
       />
-      <button onClick={signUp}>Sign Up</button>
+      <Button
+        primary
+        variant="contained"
+        sx={{
+          border: "1px solid clear",
+          borderRadius: "50px",
+          marginTop: "20px",
+        }}
+        onClick={signUp}
+      >
+        Sign Up
+      </Button>
     </div>
   );
 };
