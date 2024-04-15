@@ -127,20 +127,8 @@ const Board = ({ result, setResult, setIsAuth }) => {
       <Dialog open={openModal}>
         <DialogTitle>{winner ? `${winner} wins!` : "It's a tie!"}</DialogTitle>
         <DialogContent>
-          <p>What would you like to do next?</p>
+          <p>Please refresh to start a new game!</p>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setBoard(Array(9).fill(""));
-              setWinner("");
-              setOpenModal(false);
-            }}
-          >
-            New Game
-          </Button>
-          {/* Implement the leaderboard button functionality */}
-        </DialogActions>
       </Dialog>
     </>
   );

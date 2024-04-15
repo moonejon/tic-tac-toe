@@ -14,7 +14,6 @@ const Login = ({ setIsAuth }) => {
       password: password,
     }).then((response) => {
       const { token, userId, firstName, lastName, username } = response.data;
-      console.log(response.data);
       cookies.set("token", token);
       cookies.set("userId", userId);
       cookies.set("firstName", firstName);
