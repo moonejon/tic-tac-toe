@@ -17,7 +17,7 @@ const Board = ({ result, setResult, setIsAuth }) => {
   const [turn, setTurn] = useState("X"); // X always starts
   const [openModal, setOpenModal] = useState(false);
   const [winner, setWinner] = useState("");
-
+  const [gameConcluded, setGameConcluded] = useState(false);
   const { channel } = useChannelStateContext();
   const { client } = useChatContext();
 
@@ -27,12 +27,17 @@ const Board = ({ result, setResult, setIsAuth }) => {
   useEffect(() => {
     channel.on("move", (event) => {
       if (event.user.id !== client.userID) {
-        setBoard(board => board.map((val, idx) => idx === event.data.square ? event.data.symbol : val));
-        setTurn(turn => turn === "X" ? "O" : "X"); // Toggle turn
+        setBoard((board) =>
+          board.map((val, idx) =>
+            idx === event.data.square ? event.data.symbol : val
+          )
+        );
+        setTurn((turn) => (turn === "X" ? "O" : "X"));
       }
     });
 
-    if (client.userID === Object.keys(members)[0]) { // Assume first user in members is 'X'
+    if (client.userID === Object.keys(members)[0]) {
+      // Assume first user in members is 'X'
       setPlayerSymbol("X");
     } else {
       setPlayerSymbol("O");
@@ -46,7 +51,7 @@ const Board = ({ result, setResult, setIsAuth }) => {
   }, [board]);
 
   const chooseSquare = (square) => {
-    if (board[square] === "" && turn === playerSymbol) {
+    if (board[square] === "" && turn === playerSymbol && !gameConcluded) {
       board[square] = playerSymbol;
       setBoard([...board]);
       setTurn(turn === "X" ? "O" : "X");
@@ -62,29 +67,41 @@ const Board = ({ result, setResult, setIsAuth }) => {
   };
 
   const updateDatabase = (username, result) => {
-    Axios.post('https://tic-tac-toe-4v02.onrender.com/update', {
+    Axios.post("https://tic-tac-toe-4v02.onrender.com/update", {
       username,
-      result
-    }).catch(error => console.error('Failed to update the database:', error));
+      result,
+    }).catch((error) => console.error("Failed to update the database:", error));
   };
 
   const checkGameStatus = () => {
-    Patterns.forEach(pattern => {
+    Patterns.forEach((pattern) => {
       const firstPlayer = board[pattern[0]];
-      if (firstPlayer && pattern.every(index => board[index] === firstPlayer)) {
-        const winnerName = firstPlayer === "X" ? members[Object.keys(members)[0]].user.name : members[Object.keys(members)[1]].user.name;
-        setWinner(winnerName);
-        setResult({ winner: winnerName, state: "won" });
-        setOpenModal(true);
-        updateDatabase(winnerName, "won");
+      if (
+        firstPlayer &&
+        pattern.every((index) => board[index] === firstPlayer)
+      ) {
+        if (!gameConcluded) {
+          const winnerName =
+            firstPlayer === "X"
+              ? members[Object.keys(members)[0]].user.name
+              : members[Object.keys(members)[1]].user.name;
+          setWinner(winnerName);
+          setResult({ winner: winnerName, state: "won" });
+          setOpenModal(true);
+          updateDatabase(winnerName, "won");
+          setGameConcluded(true);
+        }
       }
     });
 
-    if (!board.includes("") && !winner) { // Check for tie
+    if (!board.includes("") && !winner && !gameConcluded) {
+      // Check for tie
       setResult({ winner: "none", state: "draw" });
       setOpenModal(true);
-      // Assuming you want to record ties as well:
-      Object.keys(members).forEach(key => updateDatabase(members[key].user.name, "lost"));
+      setGameConcluded(true);
+      Object.keys(members).forEach((key) => {
+        updateDatabase(members[key].user.name, "lost");
+      });
     }
   };
 
@@ -113,7 +130,15 @@ const Board = ({ result, setResult, setIsAuth }) => {
           <p>What would you like to do next?</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setBoard(Array(9).fill("")); setWinner(""); setOpenModal(false); }}>New Game</Button>
+          <Button
+            onClick={() => {
+              setBoard(Array(9).fill(""));
+              setWinner("");
+              setOpenModal(false);
+            }}
+          >
+            New Game
+          </Button>
           {/* Implement the leaderboard button functionality */}
         </DialogActions>
       </Dialog>
