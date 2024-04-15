@@ -111,7 +111,7 @@ html {
   top: 10px;
   right: 10px;
   color: white;
-  font-size: 16px; 
+  font-size: 16px;
 }
 #board {
   width: 500px;
@@ -151,8 +151,9 @@ h4 {
 }
 .joinGameContainer {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: center;
   padding: 20px;
   gap: 50px; /* Adds space between the two sections */
 }
@@ -199,6 +200,12 @@ h4 {
   align-items: center;
   text-align: center;
   color: white; /* Assuming white is consistent for the text color in your theme */
+  font-family: "alegreya-sans", sans-serif;
+}
+
+.leaderboard h4 {
+  font-size: 24px;
+  font-family: "alegreya-sans", sans-serif;
 }
 
 .leaderboard ul {
@@ -210,5 +217,6 @@ h4 {
 .leaderboard li {
   padding: 5px;
   border-bottom: 1px solid #ccc;
+  font-size: 16px;
   color: white; /* Ensures text is visible assuming a darker background */
 }

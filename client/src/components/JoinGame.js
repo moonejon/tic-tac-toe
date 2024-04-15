@@ -59,7 +59,7 @@ const JoinGame = ({ setIsAuth }) => {
           <ul>
             {leaderboard.map((player, index) => (
               <li key={index}>
-                {player.username}: {player.wins} wins
+                {player.username}: {player.wins > 0 ? player.wins / 2 : player.wins} wins
               </li>
             ))}
           </ul>
