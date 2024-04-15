@@ -7,11 +7,10 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import "./App.css";
 import JoinGame from "./components/JoinGame";
-import { Button } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const cookies = new Cookies();
 
-// Helper functions for cookies
 function getUserFromCookies() {
   return {
     id: cookies.get("userId"),
@@ -29,6 +28,7 @@ function clearUserCookies() {
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
+  const [open, setOpen] = useState(false);
   const client = StreamChat.getInstance(process.env.REACT_APP_API_KEY);
   const { token, ...user } = getUserFromCookies();
 
@@ -38,14 +38,22 @@ function App() {
         .then(() => setIsAuth(true))
         .catch((error) => console.error('Failed to connect user', error));
     }
-    // Disconnect the user when the component unmounts
     return () => client.disconnectUser().catch((error) => console.error('Failed to disconnect user', error));
   }, [token]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const logOut = () => {
     clearUserCookies();
     client.disconnectUser();
     setIsAuth(false);
+    handleClose();
   };
 
   return (
@@ -53,11 +61,24 @@ function App() {
       <div className="title text-pop-up-top">Tic Tac Toe</div>
       {isAuth ? (
         <>
-          <div className="username-display">{user.name}</div>
+          <div className="username-display" onClick={handleClickOpen}>{user.name}</div>
           <Chat client={client}>
             <JoinGame />
-            <button onClick={logOut}>Log Out</button>
           </Chat>
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>{"Confirm Logout"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to log out?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={logOut} autoFocus>
+                Log Out
+              </Button>
+            </DialogActions>
+          </Dialog>
         </>
       ) : (
         <div className="auth">
