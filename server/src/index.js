@@ -94,6 +94,22 @@ app.post("/update", async (req, res) => {
   }
 });
 
+app.get("/top-players", async (req, res) => {
+  try {
+    const result = await playersPool.query(
+      "SELECT username, wins FROM players ORDER BY wins DESC LIMIT 5"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        message: "Failed to retrieve top players",
+        error: error.message,
+      });
+  }
+});
+
 app.listen(3001, () => {
   console.log("Server is running on port 3001");
 });

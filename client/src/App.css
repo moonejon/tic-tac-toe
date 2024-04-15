@@ -149,6 +149,13 @@ h4 {
   color: white;
   font-size: 30px;
 }
+.joinGameContainer {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  padding: 20px;
+  gap: 50px; /* Adds space between the two sections */
+}
 
 .joinGame {
   display: flex;
@@ -184,4 +191,24 @@ h4 {
 
 .joinGameButton:hover {
   background-color: #0056b3;
+}
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white; /* Assuming white is consistent for the text color in your theme */
+}
+
+.leaderboard ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.leaderboard li {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  color: white; /* Ensures text is visible assuming a darker background */
 }
