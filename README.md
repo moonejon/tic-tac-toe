@@ -5,8 +5,9 @@
 ### Technologies Used
 
 * React (FE framework)
-* Node.js (BE)
+* Node.js and Express (BE)
 * Postgresql (DB)
+* Axios (FE API library)
 * MUI (FE UI framework)
 * GetStream.io (API using WebSockets)
 * Vercel (FE hosting)
