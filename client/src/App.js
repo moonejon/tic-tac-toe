@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Cookies from 'universal-cookie';
 import { StreamChat } from 'stream-chat';
 import { Chat } from 'stream-chat-react';
-import Game from './components/Game';
+import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material';
+import JoinGame from './components/JoinGame';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import './App.css';
-import JoinGame from './components/JoinGame';
-import { Button, Dialog, DialogActions, DialogTitle } from '@mui/material';
 
 function App() {
   const cookies = new Cookies();
@@ -16,6 +15,20 @@ function App() {
 
   const [isAuth, setIsAuth] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      client.connectUser({
+        id: cookies.get('userId'),
+        name: cookies.get('username'),
+        firstName: cookies.get('firstName'),
+        lastName: cookies.get('lastName'),
+        hashedPassword: cookies.get('hashedPassword'),
+      }, token).then(() => {
+        setIsAuth(true);
+      });
+    }
+  }, [token]);  // Only re-run this effect if the token changes
 
   const logOut = () => {
     cookies.remove('token');
@@ -36,21 +49,6 @@ function App() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-
-  if (token) {
-    client.connectUser(
-      {
-        id: cookies.get('userId'),
-        name: cookies.get('username'),
-        firstName: cookies.get('firstName'),
-        lastName: cookies.get('lastName'),
-        hashedPassword: cookies.get('hashedPassword'),
-      },
-      token
-    ).then(() => {
-      setIsAuth(true);
-    });
-  }
 
   const username = cookies.get('username');
 
