@@ -61,6 +61,13 @@ const Board = ({ result, setResult, setIsAuth }) => {
     }
   };
 
+  const updateDatabase = (username, result) => {
+    Axios.post('https://tic-tac-toe-4v02.onrender.com/update', {
+      username,
+      result
+    }).catch(error => console.error('Failed to update the database:', error));
+  };
+
   const checkGameStatus = () => {
     Patterns.forEach(pattern => {
       const firstPlayer = board[pattern[0]];
@@ -69,13 +76,15 @@ const Board = ({ result, setResult, setIsAuth }) => {
         setWinner(winnerName);
         setResult({ winner: winnerName, state: "won" });
         setOpenModal(true);
-        // Update database here
+        updateDatabase(winnerName, "won");
       }
     });
 
     if (!board.includes("") && !winner) { // Check for tie
       setResult({ winner: "none", state: "draw" });
       setOpenModal(true);
+      // Assuming you want to record ties as well:
+      Object.keys(members).forEach(key => updateDatabase(members[key].user.name, "lost"));
     }
   };
 
