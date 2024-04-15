@@ -26,7 +26,6 @@ const JoinGame = ({ setIsAuth }) => {
 
   const createChannel = async () => {
     const response = await client.queryUsers({ name: { $eq: opponent } });
-
     if (response.users.length === 0) {
       alert("User not found");
       return;
@@ -41,33 +40,42 @@ const JoinGame = ({ setIsAuth }) => {
   };
 
   return (
-    <div className="joinGameContainer">
-      <div className="joinGame">
-        <h4>Join a Game</h4>
-        <input
-          className="joinGameInput"
-          placeholder="Opponent username..."
-          onChange={(event) => setOpponent(event.target.value)}
-        />
-        <button className="joinGameButton" onClick={createChannel}>
-          Join Game
-        </button>
-      </div>
-      <div className="leaderboard">
-        <h4>Top Players</h4>
-        {leaderboard.length ? (
-          <ul>
-            {leaderboard.map((player, index) => (
-              <li key={index}>
-                {player.username}: {player.wins > 0 ? player.wins / 2 : player.wins} wins
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No leaderboard data available.</p>
-        )}
-      </div>
-    </div>
+    <>
+      {channel ? (
+        <Channel channel={channel}>
+          <Game channel={channel} setIsAuth={setIsAuth} />
+        </Channel>
+      ) : (
+        <div className="joinGameContainer">
+          <div className="joinGame">
+            <h4>Join a Game</h4>
+            <input
+              className="joinGameInput"
+              placeholder="Opponent username..."
+              onChange={(event) => setOpponent(event.target.value)}
+            />
+            <button className="joinGameButton" onClick={createChannel}>
+              Join Game
+            </button>
+          </div>
+          <div className="leaderboard">
+            <h4>Top Players</h4>
+            {leaderboard.length ? (
+              <ul>
+                {leaderboard.map((player, index) => (
+                  <li key={index}>
+                    {player.username}:{" "}
+                    {player.wins > 0 ? player.wins / 2 : player.wins} wins
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No leaderboard data available.</p>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
