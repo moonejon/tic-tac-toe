@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 
 const Board = ({ result, setResult, setIsAuth }) => {
-  const [board, setBoard] = useState(["", "", "", "", "", "", "", "", ""]);
-  const [player, setPlayer] = useState("X");
-  const [turn, setTurn] = useState("X");
+  const [board, setBoard] = useState(Array(9).fill(""));
+  const [playerSymbol, setPlayerSymbol] = useState("X"); // Default playerSymbol for the first player
+  const [turn, setTurn] = useState("X"); // X always starts
   const [openModal, setOpenModal] = useState(false);
   const [winner, setWinner] = useState("");
 
@@ -24,116 +24,59 @@ const Board = ({ result, setResult, setIsAuth }) => {
   const { name } = client.user;
   const { members } = channel.state;
 
-  const opponentId = Object.keys(members).find(
-    (memberId) => memberId !== client.userID
-  );
-  const opponent = members[opponentId]?.user?.name;
+  useEffect(() => {
+    channel.on("move", (event) => {
+      if (event.user.id !== client.userID) {
+        setBoard(board => board.map((val, idx) => idx === event.data.square ? event.data.symbol : val));
+        setTurn(turn => turn === "X" ? "O" : "X"); // Toggle turn
+      }
+    });
+
+    if (client.userID === Object.keys(members)[0]) { // Assume first user in members is 'X'
+      setPlayerSymbol("X");
+    } else {
+      setPlayerSymbol("O");
+    }
+
+    return () => channel.off("move");
+  }, [channel, client.userID, members]);
 
   useEffect(() => {
-    isWin();
-    isTie();
+    checkGameStatus();
   }, [board]);
 
-  const chooseSquare = async (square) => {
-    if (turn === player && board[square] === "") {
-      setTurn(player === "X" ? "O" : "X");
-      await channel.sendEvent({
+  const chooseSquare = (square) => {
+    if (board[square] === "" && turn === playerSymbol) {
+      board[square] = playerSymbol;
+      setBoard([...board]);
+      setTurn(turn === "X" ? "O" : "X");
+      channel.sendEvent({
         type: "move",
         data: {
           square,
-          player,
+          symbol: playerSymbol,
         },
       });
-      setBoard(
-        board.map((value, index) => {
-          if (index === square && value === "") {
-            return player;
-          }
-          return value;
-        })
-      );
+      checkGameStatus();
     }
   };
 
-  const isWin = () => {
-    Patterns.forEach((currentPattern) => {
-      const firstPlayer = board[currentPattern[0]];
-      if (firstPlayer === "") return;
-      let foundWinningPattern = true;
-
-      currentPattern.forEach((index) => {
-        if (board[index] !== firstPlayer) {
-          foundWinningPattern = false;
-        }
-      });
-
-      if (foundWinningPattern) {
-        setWinner(name);
-        setResult({
-          winner: board[currentPattern[0]],
-          state: "won",
-        });
-        Axios.post("https://tic-tac-toe-4v02.onrender.com/update", {
-          username: name,
-          result: "won",
-        });
-        Axios.post("https://tic-tac-toe-4v02.onrender.com/update", {
-          username: opponent,
-          result: "lost",
-        });
+  const checkGameStatus = () => {
+    Patterns.forEach(pattern => {
+      const firstPlayer = board[pattern[0]];
+      if (firstPlayer && pattern.every(index => board[index] === firstPlayer)) {
+        const winnerName = firstPlayer === "X" ? members[Object.keys(members)[0]].user.name : members[Object.keys(members)[1]].user.name;
+        setWinner(winnerName);
+        setResult({ winner: winnerName, state: "won" });
         setOpenModal(true);
-      }
-    });
-  };
-
-  const isTie = () => {
-    let filled = true;
-    board.forEach((square) => {
-      if (square === "") {
-        filled = false;
+        // Update database here
       }
     });
 
-    if (filled) {
-      setResult({
-        ...result,
-        state: "draw",
-      });
+    if (!board.includes("") && !winner) { // Check for tie
+      setResult({ winner: "none", state: "draw" });
       setOpenModal(true);
     }
-  };
-
-  channel.on((e) => {
-    if (e.type === "move" && e.user.id !== client.userID) {
-      const currentPlayer = e.data.player === "X" ? "O" : "X";
-      setPlayer(currentPlayer);
-      setTurn(currentPlayer);
-      setBoard(
-        board.map((value, index) => {
-          if (index === e.data.square && value === "") {
-            return e.data.player;
-          }
-          return value;
-        })
-      );
-    }
-  });
-  const handleReturnToJoinGame = () => {
-    // Reset the game state
-    setBoard(["", "", "", "", "", "", "", "", ""]);
-    setWinner("");
-    setResult({ winner: "", state: "" });
-
-    // Close the modal
-    setOpenModal(false);
-
-    // Set the app state to return to the JoinGame screen
-    setIsAuth(false);
-  };
-
-  const handleLeaderboard = () => {
-    // Implement the functionality to navigate to the leaderboard page
-    setOpenModal(false);
   };
 
   return (
@@ -161,8 +104,8 @@ const Board = ({ result, setResult, setIsAuth }) => {
           <p>What would you like to do next?</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleReturnToJoinGame}>New Game</Button>
-          <Button onClick={handleLeaderboard}>Leaderboard</Button>
+          <Button onClick={() => { setBoard(Array(9).fill("")); setWinner(""); setOpenModal(false); }}>New Game</Button>
+          {/* Implement the leaderboard button functionality */}
         </DialogActions>
       </Dialog>
     </>
