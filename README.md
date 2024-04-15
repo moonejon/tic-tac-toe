@@ -4,7 +4,7 @@
 
 Please feel free to create your own users, but if you'd like to use one of the existing test users, there are four existing demo players.
 
-Their usernames are (obiwan, R2D2, HanSolo,, and LukeSkywalker) and the password for all four is "starwars"
+Their usernames are (obiwan, R2D2, HanSolo, and LukeSkywalker) and the password for all four is "starwars"
 
 ### Technologies Used
 
