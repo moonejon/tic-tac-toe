@@ -5,13 +5,11 @@ import { useChannelStateContext, useChatContext } from "stream-chat-react";
 import Axios from "axios";
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
-  Button,
 } from "@mui/material";
 
-const Board = ({ result, setResult, setIsAuth }) => {
+const Board = ({ setResult }) => {
   const [board, setBoard] = useState(Array(9).fill(""));
   const [playerSymbol, setPlayerSymbol] = useState("X"); // Default playerSymbol for the first player
   const [turn, setTurn] = useState("X"); // X always starts
@@ -21,7 +19,6 @@ const Board = ({ result, setResult, setIsAuth }) => {
   const { channel } = useChannelStateContext();
   const { client } = useChatContext();
 
-  const { name } = client.user;
   const { members } = channel.state;
 
   useEffect(() => {
@@ -46,9 +43,11 @@ const Board = ({ result, setResult, setIsAuth }) => {
     return () => channel.off("move");
   }, [channel, client.userID, members]);
 
+
   useEffect(() => {
     checkGameStatus();
   }, [board]);
+
 
   const chooseSquare = (square) => {
     if (board[square] === "" && turn === playerSymbol && !gameConcluded) {
